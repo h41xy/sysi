@@ -1,0 +1,53 @@
+mv
+  Verschieben (Umbenennen) von Dateien
+  /usr/bin/mv
+  mv file01 file02
+  rename()
+
+chmod
+  Aendere die Berechtigungen einer Datei
+  /usr/bin/chmod
+  chmod 755 a.out
+  chmod()
+
+chown
+  Aendere den Dateibesitzer
+  /usr/bin/chown
+  chown user1 file.tar.gz
+  chown()
+
+mkdir
+  Lege Ordner an
+  /usr/bin/mkdir
+  mkdir exmaple
+  mkdir()
+
+rmdir
+  Loesche Ordner
+  /usr/bin/rmdir
+  rmdir example
+  rmdir()
+
+kill
+  Terminiere oder sende Signale an Prozesse
+  /usr/bin/kill
+  kill -9 init
+  kill()
+
+ln
+  Erzeuge hard oder symbolic links zu Dateien
+  /usr/bin/ln
+  ln source target
+  link()
+
+sleep
+  Unterbinde die Ausfuehrung einen bestimmten Interval
+  /usr/bin/sleep
+  sleep 5
+  nanosleep()
+
+wget
+  Nicht interaktiver netzwerk downloader
+  /usr/bin/wget
+  wget http://blaurl/tmp.pdf
+  connect(), recvfrom()
