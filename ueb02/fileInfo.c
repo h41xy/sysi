@@ -52,7 +52,9 @@ printf("\nFile:\t%s\n", curFileName);
     printf("Last Access:\t%s", ctime(&fileStat.st_atime));
 	printf("Last Modify:\t%s", ctime(&fileStat.st_mtime));
         printf("Last Change:\t%s", ctime(&fileStat.st_ctime));
+#ifdef __FreeBSD__
 	printf("File Birth:\t%s", ctime(&fileStat.st_birthtime));
+#endif
 }
 
     return 0;
