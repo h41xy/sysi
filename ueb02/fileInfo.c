@@ -3,26 +3,29 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <pwd.h>
+#include <errno.h>
 
 
 int main(int argc, char **argv){
-  // Arguments test
-    int i;
-    for (i = 1; i < argc; ++i)
-      printf("%s\n", argv[i]);
-
-  // Get file info in struct
-    char *pathname;
-    pathname = argv[1];
-    printf("%s\n", pathname);
-
     struct stat fileStat;
     struct passwd *pwd;
     int accessRights;
-    struct tm info;
+ 
+   time_t timeT;
+	char *curFileName;
 
+
+
+while(--argc > 0){
   // Get File Statistics
-    lstat(pathname, &fileStat);
+	curFileName = argv[argc];
+printf("\nFile:\t%s\n", curFileName);
+    errno = lstat(curFileName, &fileStat);
+	if(errno == -1){
+		perror("Error: ");
+		return(errno);
+
+	}
 
   // Get User Informations
     pwd = getpwuid(fileStat.st_uid); 
@@ -30,7 +33,8 @@ int main(int argc, char **argv){
   // Get Accessrights
     accessRights = (fileStat.st_mode & S_IRWXO + S_IRWXG + S_IRWXU); 
 
-    printf("File type:                ");
+
+    printf("File type:\t");
     switch (fileStat.st_mode & S_IFMT) {
       case S_IFBLK:  printf("block device\n");            break;
       case S_IFCHR:  printf("character device\n");        break;
@@ -45,7 +49,11 @@ int main(int argc, char **argv){
     printf("User ID:\t%d\n", fileStat.st_uid);
     printf("Group ID:\t%d\n", fileStat.st_gid);
     printf("Access:\t\t%o\n", accessRights);
-    printf("Last Access:\tMYASS\n");
+    printf("Last Access:\t%s", ctime(&fileStat.st_atime));
+	printf("Last Modify:\t%s", ctime(&fileStat.st_mtime));
+        printf("Last Change:\t%s", ctime(&fileStat.st_ctime));
+	printf("File Birth:\t%s", ctime(&fileStat.st_birthtime));
+}
 
     return 0;
 }
