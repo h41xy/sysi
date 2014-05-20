@@ -1,0 +1,6 @@
+1b)
+  HTC Desire HD A9191
+  2013:08:12 14:34:11
+
+  strings -t x <file> | more
+  hexdump -C <file> | more
