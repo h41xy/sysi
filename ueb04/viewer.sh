@@ -13,6 +13,5 @@ jpeg="JPEG*"
 bmp="BMP*"
 
 
-x=`file ~/wallpaper.png`
+x=`file -b --mime-type ~/wallpaper.png`
 echo "$x"
-echo "${x#PNG*}"

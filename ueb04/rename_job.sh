@@ -12,14 +12,14 @@ fi
 
 # toDo: test argument style (dot infront)
 #not yet working
-if [ ${1%.*} = "" ]
-then
-  echo "Dateisuffixe beginnen immer mit ."
-  exit 1
-fi
+#if [ ${1%.*} = "" ]
+#then
+#  echo "Dateisuffixe beginnen immer mit ."
+#  exit 1
+#fi
 
 for x in `ls *$1`; do
-  echo "$x "${x%$1}$2""
+  mv $x "${x%$1}$2"
 done
 
 exit 0
