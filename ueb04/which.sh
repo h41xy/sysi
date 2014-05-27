@@ -1,7 +1,7 @@
 #!/usr/local/bin/bash
 
 if [ $# -eq 0 ]; then
-echo "usage: ./which.sh [-as] program ..."
+echo "usage: $0 [-as] program ..."
 exit 1
 fi
 
@@ -16,13 +16,32 @@ fi
 done
 
 case $1 in
-"-a")
-find $OK -name $2
-;;
-"-s")
-find $OK -name $2 > /dev/null
-;;
-*)
-find $OK -name $1 | head -n 1 
-;;
+	"-a")
+	for i in $OK
+	do
+		if [ -a $i/$2 ]; then
+			echo $i/$2
+		fi
+	done
+	;;
+ 
+	"-s")
+	for i in $OK
+	do
+		if [ -a $i/$2 ]; then
+			exit 0 
+		fi
+	done
+	exit 1
+	;;
+
+	*)
+	for i in $OK
+	do
+		if [ -a $i/$2 ]; then
+			echo $i/$2
+		exit 0
+		fi
+	done
+	;;
 esac
