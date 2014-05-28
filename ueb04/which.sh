@@ -39,7 +39,7 @@ case $1 in
 	for i in $OK
 	do
 		if [ -a $i/$2 ]; then
-			echo $i/$2
+			echo $i/$1
 		exit 0
 		fi
 	done
