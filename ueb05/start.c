@@ -1,14 +1,17 @@
-#include <unistd.h> /* fork() wait() */
+// sortier den kram noch ordentlich !
+// generel waere es schoen alle ausgabe in main zu haben
+#include <unistd.h> /* fork() */
 #include <errno.h> /* perror() */
 #include <stdio.h>
 #include <sys/wait.h> /* guess what */
+#include <sys/types.h> /* wait() */
 #include <sys/resource.h> /* setpriority() */
 #include <sys/time.h> /*setpriority(), braucht linux nicht aber BSD*/
+#include <signal.h> /* psignal*/
+#include <stdlib.h> /* EXIT_FAILURE */
 
 int run(int argc, char **argv){ 
-  printf("This is run()\n");
   
-  // fork process && ausgabe pid child - check ? function
   // Fork fuehrt ALLEN folgenden code aus, einmal als
   // child process und danach als parent.
   // Deshalb wird nach fork die pid 
@@ -19,48 +22,63 @@ int run(int argc, char **argv){
 
   pid_t cpid;
 
-  // pid_t ppid; 
-  // ppid = getpid();
-  // printf("ParentPID:\t%d\n", ppid);
-
   cpid = fork();
-
-  if (cpid == 0){ /* Child Kot */
+  if(cpid == -1){
+    perror("Fork");
+    exit(EXIT_FAILURE);
+  }
   
-    printf("I am the child.\nMyPid is:\t%ld\n", getpid());
-    // set low prio - check 
+  if (cpid == 0){ /* Child Kot - in func auslagern */
+  
+    // set low prio
 
     int which = PRIO_PROCESS;
     id_t pid = cpid;
     int priority = 20;
-    int ret;
 
-    int myprio;
+    if (setpriority(which, pid, priority) == -1){
+      perror("Set Priority");
+      exit(EXIT_FAILURE);
+    }
 
-    // perror abfangen
-    ret = setpriority(which, pid, priority);
+    printf("Myprio is:\t%d\n\n\n", getpriority(which, cpid) );
 
-    myprio = getpriority(which, cpid);
-
-    printf("Myprio is:\t%d\n", myprio);
-
-    // execvp argv[0]
-    // perror
-    execvp(argv[1], argv);
-    perror("Execvp");
-    // 
-
+    //while (*argv != '\0'){
+    //  printf("%s\n", *argv);
+    //  argv+=1;
+    //}
+    if (execvp(*argv, argv) == -1){
+      perror("Execvp");
+      exit(EXIT_FAILURE);
+    }
 
   } else { /* Parent Kot */
 
-    printf("I am the parent.\nMyPID is:\t%ld\n", getpid());
+    pid_t child;
+    int status;
+    
+    child = wait(&status);
+    if (child == -1){
+      perror("wait");
+      exit(EXIT_FAILURE);
+    }
+
+    if (WIFEXITED(status)) {
+      printf("\n\nExit %s, CODE=%d\n", argv[1], WEXITSTATUS(status));
+    } else if (WIFSIGNALED(status)) {
+      printf("Signal %d\n", WTERMSIG(status));
+      psignal(WTERMSIG(status), "");
+    }
+
   }
 
 }
 
 int main(int argc, char **argv){
-  printf("This is main()\n");
 
-  // check Argc
-  run(argc, argv);
+  if (argc < 2){
+    printf("Bitte geben Sie ein Programm an welches aufgerufen werden soll.\n");
+    exit(EXIT_FAILURE);
+  }
+  run(argc, argv+1);
 }
