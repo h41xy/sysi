@@ -22,7 +22,7 @@ int producer() {
 	int* shared;
 	int i;
 	
-	LOGLINE("producer start")
+	printf("Start Producer\n");
 
 	shared = shm_pointer(shmid);
 	if (shared == (void*)-1) {
@@ -57,7 +57,7 @@ int producer() {
 
 	free(buf);	
 
-	LOGLINE("producer end")	
+	printf("Ende Producer\n");
 	return 0;
 }
 
@@ -66,7 +66,7 @@ int consumer() {
 	int item;
 	int i;
 	
-	LOGLINE("consumer start")
+	printf("Start Consumer\n");
 
 	shared = shm_pointer(shmid);
 	if (shared == (void*)-1) {
@@ -87,7 +87,7 @@ int consumer() {
 		printf("consumer: shared[%d] = %d\n", i%N_SHARED, item);
 	}
 	
-	LOGLINE("consumer end")
+	printf("Ende Consumer\n");
 	return 0;
 }
 

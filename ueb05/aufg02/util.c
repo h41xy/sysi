@@ -5,18 +5,20 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 
+
+/*   SHARED MEMORY   */
  
-/* legt den gemeinsamen Speicher an */
+/* SM anlegen */
 int shm_create(size_t size) {
 	return shmget(IPC_PRIVATE, size, 0666);
 }
 
-/* bindet den Speicher ein */
+/* SM einbinden attach */
 void* shm_pointer(int shmid) {
 	return shmat(shmid, NULL, 0);
 }
 
-/* gibt den Speicher frei */
+/* SM freigeben detatch */
 int shm_remove(int shmid) {
 	struct shmid_ds sb;
 
@@ -27,17 +29,20 @@ int shm_remove(int shmid) {
 	return 0;
 }
 
-/* erzeugt eine neue Gruppe Semaphoren */
+/*  SEMAPHOREN    */
+
+
+/* SemaphorenGruppe anlegen */
 int sem_create(int n) {
 	return semget(IPC_PRIVATE, n, 0666);
 }
 
-/* Setzen des Semaphorwertes */
+/* Semaphorwerte setzen */
 int sem_set(int semid, int value) {
 	return semctl(semid, 0, SETVAL, value);
 }
 
-/* dekrementiert den Wert eines Semaphores */
+/* Semaphorenwert erniedrigen */
 int sem_down(int semid) {
 	struct sembuf sb;
 
@@ -52,7 +57,7 @@ int sem_down(int semid) {
 	return 0;
 }
 
-/* inkrementiert den Wert eines Semaphores */
+/* Semaphorenwert erhoehen */
 int sem_up(int semid) {
 	struct sembuf sb;
 
@@ -67,7 +72,7 @@ int sem_up(int semid) {
 	return 0;
 }
 
-/* löscht eine Gruppe von Semaphoren */
+/* Semaphorengruppe loeschen  */
 int sem_remove(int semid) {
 	if (semctl(semid, 0, IPC_RMID) < 0) {
 		return -1;

@@ -9,8 +9,6 @@
 #define SEM_R 0
 #endif
 
-#define LOGLINE(szMsg) printf("%s\n", szMsg);
-
 int shm_create(size_t size);
 void* shm_pointer(int shmid);
 int shm_remove(int shmid);
