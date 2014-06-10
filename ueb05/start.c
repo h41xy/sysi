@@ -9,6 +9,14 @@
 #include <sys/time.h> /*setpriority(), BSD braucht laut manPage diese lib*/
 #include <signal.h> /* psignal*/
 
+void output();
+int run(int, char**);
+
+pid_t cpidout;
+int exitcode, termsig;
+int cprio;
+char *progname;
+
 int run(int argc, char **argv){ 
   
   // Fork fuehrt ALLEN folgenden code aus, einmal als
@@ -21,7 +29,7 @@ int run(int argc, char **argv){
 
   pid_t cpid;
 
-  cpid = fork();
+  cpidout = cpid = fork();
   if(cpid == -1){
     perror("Fork");
     exit(EXIT_FAILURE);
@@ -29,18 +37,7 @@ int run(int argc, char **argv){
   
   if (cpid == 0){ /* Child Kot - in func auslagern */
   
-    // set low prio
 
-    int which = PRIO_PROCESS;
-    id_t pid = cpid;
-    int priority = 20;
-
-    if (setpriority(which, pid, priority) == -1){
-      perror("Set Priority");
-      exit(EXIT_FAILURE);
-    }
-
-    printf("Myprio is:\t%d\n\n\n", getpriority(which, cpid) );
 
     if (execvp(*argv, argv) == -1){
       perror("Execvp");
@@ -51,7 +48,20 @@ int run(int argc, char **argv){
 
     pid_t child;
     int status;
-    
+
+    // set low prio
+
+    int which = PRIO_PROCESS;
+    int priority = 20;
+
+    if (setpriority(which, cpid, priority) == -1){
+      perror("Set Priority");
+      exit(EXIT_FAILURE);
+    }
+
+    printf("Myprio is:\t%d\n\n\n", getpriority(which, cpid) );
+    cprio = getpriority(which, cpid);   
+
     child = wait(&status);
     if (child == -1){
       perror("wait");
@@ -59,19 +69,25 @@ int run(int argc, char **argv){
     }
 
     if (WIFEXITED(status)) {
-      printf("\n\nExit %s, CODE=%d\n", *argv, WEXITSTATUS(status));
-    } else if (WIFSIGNALED(status)) {
+      exitcode = WEXITSTATUS(status);
+    } 
+    if (WIFSIGNALED(status)) {
       printf("Signal %d\n", WTERMSIG(status));
       psignal(WTERMSIG(status), "");
+      exitcode = WEXITSTATUS(status);
     }
 
   }
 
 }
 
-int output(){
+void output(){
   printf("---------------------------------------------\n");
-  printf("Programm:%d\t\n", *progname);
+  printf("Programm:\t%s\n", progname);
+  printf("Child PID:\t%d\n", cpidout);
+  printf("Exitcode:\t%d\n", exitcode);
+
+  printf("Child Priority:\t%d\n", cprio);
 }
 
 int main(int argc, char **argv){
@@ -81,11 +97,9 @@ int main(int argc, char **argv){
     exit(EXIT_FAILURE);
   }
 
-  pid_t *cpidout;
-  int *exitcode, *termsig;
-  char *progname;
-  progname = argv+1;
+  progname = argv[1];
 
   run(argc, argv+1);
   output();
+  exit(EXIT_SUCCESS);
 }
