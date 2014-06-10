@@ -1,14 +1,13 @@
-// sortier den kram noch ordentlich !
 // generel waere es schoen alle ausgabe in main zu haben
-#include <unistd.h> /* fork() */
-#include <errno.h> /* perror() */
 #include <stdio.h>
+#include <stdlib.h> /* EXIT_FAILURE */
+#include <errno.h> /* perror() */
+#include <unistd.h> /* fork() */
 #include <sys/wait.h> /* guess what */
 #include <sys/types.h> /* wait() */
 #include <sys/resource.h> /* setpriority() */
-#include <sys/time.h> /*setpriority(), braucht linux nicht aber BSD*/
+#include <sys/time.h> /*setpriority(), BSD braucht laut manPage diese lib*/
 #include <signal.h> /* psignal*/
-#include <stdlib.h> /* EXIT_FAILURE */
 
 int run(int argc, char **argv){ 
   
@@ -43,10 +42,6 @@ int run(int argc, char **argv){
 
     printf("Myprio is:\t%d\n\n\n", getpriority(which, cpid) );
 
-    //while (*argv != '\0'){
-    //  printf("%s\n", *argv);
-    //  argv+=1;
-    //}
     if (execvp(*argv, argv) == -1){
       perror("Execvp");
       exit(EXIT_FAILURE);
@@ -64,7 +59,7 @@ int run(int argc, char **argv){
     }
 
     if (WIFEXITED(status)) {
-      printf("\n\nExit %s, CODE=%d\n", argv[1], WEXITSTATUS(status));
+      printf("\n\nExit %s, CODE=%d\n", *argv, WEXITSTATUS(status));
     } else if (WIFSIGNALED(status)) {
       printf("Signal %d\n", WTERMSIG(status));
       psignal(WTERMSIG(status), "");
@@ -74,11 +69,23 @@ int run(int argc, char **argv){
 
 }
 
+int output(){
+  printf("---------------------------------------------\n");
+  printf("Programm:%d\t\n", *progname);
+}
+
 int main(int argc, char **argv){
 
   if (argc < 2){
     printf("Bitte geben Sie ein Programm an welches aufgerufen werden soll.\n");
     exit(EXIT_FAILURE);
   }
+
+  pid_t *cpidout;
+  int *exitcode, *termsig;
+  char *progname;
+  progname = argv+1;
+
   run(argc, argv+1);
+  output();
 }
