@@ -5,23 +5,27 @@
 volatile int signo;
 void sig_handler(int);
 
-int main(void) {
-  int count = 1;
+int main() {
+  int count = 1;  
   signo = 0;
 
+  struct sigaction sa;
+  sa.sa_handler = sig_handler;
+  sigemptyset(&sa.sa_mask); // Waerend sig_handler wird KEIN anderes SIgnal geblockt
+  sa.sa_flags = SA_RESTART;
+  
   while (count <= 30) {
-    // SIGKILL und SIGCONT koennen nicht gehandelt werden
     if (count == 9 || count == 19)
       count++;
 
-    if (signal(count, sig_handler) == SIG_ERR) {
-      perror("Signal");
-      return(EXIT_FAILURE);
+    if (sigaction(count, &sa, NULL) == -1) {
+      perror("Sigaction");
+      return EXIT_FAILURE;
     }
     count++;
   }
-
   sleep(60);
+
   if (signo == 0)
     return EXIT_SUCCESS;
   else
