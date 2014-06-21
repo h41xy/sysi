@@ -48,8 +48,8 @@ int main(int argc, char **argv) {
   sigfillset(&sa.sa_mask);
   sa.sa_flags = 0;
   
-  while (count <= 30) {
-    if (count == 8 || count == 11 || count == 14 || count == 19)
+  while (count <= 32) {
+    if (count == 8 || count == 11 || count == 14 || count == 17 || count == 19)
       count++;
         if (count == 9)
           count++;

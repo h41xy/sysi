@@ -14,8 +14,8 @@ int main() {
   sigfillset(&sa.sa_mask);
   sa.sa_flags = SA_RESTART;
   
-  while (count <= 30) {
-    if (count == 9 || count == 19)
+  while (count <= 32) {
+    if (count == 9 || count == 17|| count == 19)
       count++;
 
     if (sigaction(count, &sa, NULL) == -1) {

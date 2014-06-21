@@ -9,9 +9,9 @@ int main(void) {
   int count = 1;
   signo = 0;
 
-  while (count <= 30) {
+  while (count <= 32) {
     // SIGKILL und SIGCONT koennen nicht gehandelt werden
-    if (count == 9 || count == 19)
+    if (count == 9 || count == 17 || count == 19)
       count++;
 
     if (signal(count, sig_handler) == SIG_ERR) {
