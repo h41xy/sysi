@@ -16,14 +16,18 @@ if [ $UID != 0 ]
     exit 1
 fi
 
-rm $FILE > /dev/null 2>&1
+if [ -e $FILE ] 
+then
+  rm $FILE 
+fi
+
 touch $FILE
 chmod 700 $FILE
 
 COUNT=01
 while [ $COUNT -lt 51 ]
 do
-  echo "${USERNAME}${COUNT}:${CURRENTUID}:${GID}:::::::${SHELL}:`openssl rand -base64 6`" >> $FILE
+  echo "${USERNAME}${COUNT}:${CURRENTUID}:${GID}:::::::${SHELL}:`openssl -rand -base64 6`" >> $FILE
   CURRENTUID=`expr $CURRENTUID + 1`
   COUNT=`expr $COUNT + 1`
   if [ $COUNT -lt 10 ] 
