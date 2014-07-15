@@ -1,0 +1,37 @@
+#!/bin/sh
+# Script um 50 User anzulegen
+# name:uid:gid::::gecos(fullname)::home_dir(leave empty):shell:password
+
+USERNAME="uoberdorf"
+CURRENTUID=1101
+GID= #Schau die GID nach
+SHELL=/bin/tcsh
+PASSWORD="pass${USERNAME}"
+
+FILE=/tmp/add50User
+
+if [ $UID != 0 ]
+  then
+    echo "You must be root."
+    exit 1
+fi
+
+rm $FILE 2>&1> /dev/null
+touch $FILE
+chmod 700 $FILE
+
+COUNT=01
+while [ $COUNT -lt 51 ]
+do
+  echo "${USERNAME}${COUNT}:${CURRENTUID}:${GID}:::::::${SHELL}:${PASSWORD}${COUNT}" >> $FILE
+  CURRENTUID=`expr $CURRENTUID + 1`
+  COUNT=`expr $COUNT + 1`
+  if [ $COUNT -lt 10 ] 
+    then
+      COUNT="0${COUNT}"
+  fi
+done
+
+#adduser -f $FILE
+rm $FILE
+exit 0
