@@ -10,6 +10,7 @@
 #include <signal.h> /* psignal*/
 
 #define CHILDCOUNT 5
+#define TRUE 1
 
 void output();
 int run(int, char**);
@@ -45,17 +46,20 @@ int run(int argc, char **argv){
   //----------------------------------------------------------------------------
   pid_t *cpid = malloc(CHILDCOUNT*sizeof(pid_t));
 
+  int child = 0;
+
   int i;
   int myID;
   for (i = 0; i < CHILDCOUNT; i++) {
     printf(" i = %d\n", i);
 
-    if (i != 0  && cpid[i-1] != 0) {
-        cpid[i] = fork();
-    } else {
+    if ( !child ) {
       cpid[i] = fork();
     }
-      
+
+    if (cpid[i] == 0) {
+      child = TRUE;
+    }
     
     myID = i;
   }
@@ -130,6 +134,6 @@ int main(int argc, char **argv){
   progname = argv[1];
 
   run(argc, argv+1);
-  output();
+  //output();
   exit(EXIT_SUCCESS);
 }
