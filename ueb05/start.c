@@ -9,6 +9,7 @@
 #include <sys/time.h> /*setpriority(), BSD braucht laut manPage diese lib*/
 #include <signal.h> /* psignal*/
 
+#define CHILDCOUNT 5
 
 void output();
 int run(int, char**);
@@ -29,15 +30,42 @@ int run(int argc, char **argv){
   // kot ausgefuehrt. Steht im example von man 2 wait
   // aber ich habs erst nach rumspielen gerafft.
 
-  pid_t cpid;
+  /*pid_t cpid;
+  pid_t cpid2;
+  pid_t cpid3;
 
   cpidout = cpid = fork();
-  if(cpid == -1){
+  if (cpid != 0) {
+    cpid2 = fork();
+  }
+  if (cpid2 != 0) {
+    cpid3 = fork();
+  }
+*/
+  //----------------------------------------------------------------------------
+  pid_t *cpid = malloc(CHILDCOUNT*sizeof(pid_t));
+
+  int i;
+  int myID;
+  for (i = 0; i < CHILDCOUNT; i++) {
+    printf(" i = %d\n", i);
+
+    if (i != 0  && cpid[i-1] != 0) {
+        cpid[i] = fork();
+    } else {
+      cpid[i] = fork();
+    }
+      
+    
+    myID = i;
+  }
+  //----------------------------------------------------------------------------
+  if(cpid[myID] == -1){
     perror("Fork");
     exit(EXIT_FAILURE);
   }
   
-  if (cpid == 0){ /* Child Kot - in func auslagern */
+  if (cpid[myID] == 0){ /* Child Kot - in func auslagern */
   
     if (execvp(*argv, argv) == -1){
       perror("Execvp");
@@ -50,7 +78,7 @@ int run(int argc, char **argv){
     int status;
 
     // set low prio
-
+    /* currently disabled
     int which = PRIO_PROCESS;
     int priority = 20;
 
@@ -60,6 +88,7 @@ int run(int argc, char **argv){
     }
 
     cprio = getpriority(which, cpid);   
+    */
 
     child = wait(&status);
 
